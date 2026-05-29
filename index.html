@@ -1,0 +1,652 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ArtDrop | CS2 Cases</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0c0f;
+            color: #fff;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/images/Logo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 400px;
+            opacity: 0.1;
+            filter: blur(4px);
+            z-index: -2;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 30%, #000 100%);
+            z-index: -1;
+        }
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 150;
+            color: black;
+        }
+        .support-section {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 150;
+            color: black;
+        }
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --card-bg: #000000cc;
+            --border: rgba(245,158,11,0.3);
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        .glass-card { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 24px; }
+        .btn {
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: black; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: white; }
+        .btn-outline:hover { border-color: #f59e0b; color: #f59e0b; }
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+        .logo img { height: 48px; }
+        .logo span { font-size: 24px; font-weight: 800; color: #f59e0b; }
+        .balance { background: rgba(245,158,11,0.2); padding: 8px 18px; border-radius: 40px; border: 1px solid var(--border); cursor: pointer; }
+        .profile-icon { width: 44px; height: 44px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: black; }
+        .profile-panel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 400px;
+            height: 100vh;
+            background: #000;
+            border-left: 1px solid var(--border);
+            z-index: 200;
+            transition: right 0.3s;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        .profile-panel.active { right: 0; }
+        .panel-header { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .panel-header h2 { color: #f59e0b; }
+        .panel-close { font-size: 28px; cursor: pointer; }
+        .panel-section { margin-bottom: 30px; }
+        .panel-section h3 { color: #f59e0b; margin-bottom: 16px; }
+        .panel-list { display: flex; flex-direction: column; gap: 12px; }
+        .panel-item { background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 16px; display: flex; justify-content: space-between; }
+        .cases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin: 40px 0; }
+        .case-card { background: #000; border-radius: 24px; padding: 20px; text-align: center; border: 2px solid #f59e0b; cursor: pointer; }
+        .case-card h3 { color: #f59e0b; margin: 16px 0 8px; }
+        .case-card .price { color: #f59e0b; margin-bottom: 20px; }
+        .case-card img { width: 120px; height: 120px; object-fit: contain; }
+        .wheel { width: 300px; height: 300px; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.2,0.9,0.1,1.1); margin: 20px auto; }
+        .wheel-pointer { position: relative; top: -160px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 50px solid #ef4444; z-index: 10; }
+        .upgrade-circle { width: 150px; height: 150px; margin: 20px auto; position: relative; }
+        .upgrade-circle-bg { width: 100%; height: 100%; border-radius: 50%; background: white; }
+        .upgrade-circle-fill { width: 100%; height: 100%; border-radius: 50%; position: absolute; top: 0; left: 0; }
+        .upgrade-circle-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 24px; font-weight: bold; color: black; }
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 300;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-modal.active { display: flex; }
+        .admin-modal-content { background: #000; border-radius: 32px; width: 90%; max-width: 600px; padding: 32px; border: 1px solid #f59e0b; max-height: 80vh; overflow-y: auto; }
+        .admin-modal-content h2 { color: #f59e0b; margin-bottom: 20px; }
+        .admin-modal-content input, .admin-modal-content select { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #f59e0b; border-radius: 16px; color: white; margin-bottom: 20px; }
+        .admin-panel { display: none; margin-top: 20px; }
+        .admin-panel.active { display: block; }
+        .admin-stats { background: rgba(245,158,11,0.1); padding: 16px; border-radius: 16px; margin-bottom: 20px; }
+        .admin-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 20px; }
+        .admin-grid button { padding: 12px; background: #1a1a1a; border: 1px solid #f59e0b; color: #f59e0b; border-radius: 12px; cursor: pointer; }
+        @media (max-width: 768px) { .profile-panel { width: 100%; right: -100%; } .admin-grid { grid-template-columns: 1fr; } .wheel { width: 250px; height: 250px; } }
+    </style>
+</head>
+<body>
+
+    <div class="support-section" onclick="window.open('https://t.me/ArtCSbotSupp','_blank')">
+        <i class="fas fa-headset"></i>
+    </div>
+    <div class="music-control" onclick="toggleMusic()">
+        <i id="musicIcon" class="fas fa-music"></i>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/images/Logo.png" alt="ArtDrop">
+                    <span>ArtDrop</span>
+                </div>
+                <div class="user-info">
+                    <div class="balance" onclick="refreshBalance()">💰 <span id="balance">0</span></div>
+                    <div class="profile-icon" onclick="openProfile()"><i class="fas fa-user"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-panel" id="profilePanel">
+        <div class="panel-header">
+            <h2>Профиль</h2>
+            <div class="panel-close" onclick="closeProfile()">✕</div>
+        </div>
+        <div class="panel-section">
+            <h3>Статистика</h3>
+            <div class="panel-list">
+                <div class="panel-item"><span>🆔 ID</span><span id="userId">-</span></div>
+                <div class="panel-item"><span>📦 Инвентарь</span><span id="invCount">0</span></div>
+                <div class="panel-item"><span>💸 Депозитов</span><span id="depositSum">0 ₽</span></div>
+                <div class="panel-item"><span>🎡 Прокруток</span><span id="wheelSpins">1</span></div>
+                <div class="panel-item"><span>👥 Рефералов</span><span id="refCount">0</span></div>
+                <div class="panel-item"><span>🏆 Топ скин</span><span id="topSkin">Нет</span></div>
+                <div class="panel-item"><span>🔐 Prime</span><span id="primeStatus">❌</span></div>
+            </div>
+        </div>
+        <div class="panel-section">
+            <h3>Инвентарь</h3>
+            <div class="panel-list" id="inventoryList"><div class="panel-item">Загрузка...</div></div>
+        </div>
+        <div class="panel-section">
+            <h3>Промокоды</h3>
+            <div class="panel-list" id="promoList"><div class="panel-item">Нет</div></div>
+        </div>
+        <div class="panel-section">
+            <h3>Реферальная ссылка</h3>
+            <div class="panel-item" id="refLink" style="word-break:break-all">-</div>
+            <button class="btn btn-outline" style="margin-top:12px; width:100%" onclick="copyRefLink()">📋 Копировать</button>
+        </div>
+        <button class="btn btn-outline" style="margin-top:20px; width:100%; border-color:#ef4444; color:#ef4444" onclick="showAdminModal()">👑 Админ панель</button>
+    </div>
+
+    <div class="container">
+        <div style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; justify-content: center;">
+            <button class="btn btn-outline active-tab" onclick="showTab('cases')">🎁 Кейсы</button>
+            <button class="btn btn-outline" onclick="showTab('upgrade')">💎 Апгрейд</button>
+            <button class="btn btn-outline" onclick="showTab('wheel')">🎡 Колесо</button>
+            <button class="btn btn-outline" onclick="showTab('referral')">👥 Рефералы</button>
+            <button class="btn btn-outline" onclick="showTab('promo')">🎫 Промокод</button>
+            <button class="btn btn-outline" onclick="showTab('prime')">💎 Prime</button>
+            <button class="btn btn-outline" onclick="showTab('deposit')">💰 Пополнение</button>
+            <button class="btn btn-outline" onclick="showTab('withdraw')">📤 Вывод</button>
+        </div>
+
+        <div id="tabCases" class="tab-content">
+            <div class="cases-grid" id="casesGrid">Загрузка...</div>
+        </div>
+        <div id="tabUpgrade" class="tab-content" style="display:none">
+            <div id="upgradeItemsList" class="cases-grid"><div class="glass-card" style="padding:40px;text-align:center">Выберите предмет из инвентаря</div></div>
+        </div>
+        <div id="tabWheel" class="tab-content" style="display:none">
+            <div style="text-align:center">
+                <div class="wheel" id="wheel"></div>
+                <div class="wheel-pointer"></div>
+                <button class="btn btn-primary" onclick="spinWheel()" style="margin-top:20px">🎡 Крутить</button>
+                <div style="margin-top:20px">Прокруток: <span id="wheelSpinsCount">1</span></div>
+            </div>
+        </div>
+        <div id="tabReferral" class="tab-content" style="display:none">
+            <div class="glass-card" style="padding:40px;text-align:center">
+                <h3 style="color:#f59e0b">Реферальная система</h3>
+                <div class="panel-item" id="refLinkTab" style="word-break:break-all; margin:20px 0">-</div>
+                <button class="btn btn-primary" onclick="copyRefLink()">📋 Скопировать ссылку</button>
+                <div style="margin-top:20px">👥 Приглашено: <span id="refCountTab">0</span><br>💰 +5000 вам, +3000 другу</div>
+            </div>
+        </div>
+        <div id="tabPromo" class="tab-content" style="display:none">
+            <div class="glass-card" style="padding:40px">
+                <h3 style="color:#f59e0b; margin-bottom:20px">Активация промокода</h3>
+                <div class="promo-form" style="display:flex; gap:12px">
+                    <input type="text" id="promoCodeInput" placeholder="Введите промокод" style="flex:1; padding:14px; background:#1a1a1a; border:1px solid #f59e0b; border-radius:16px; color:white">
+                    <button class="btn btn-primary" onclick="activatePromo()">Активировать</button>
+                </div>
+            </div>
+        </div>
+        <div id="tabPrime" class="tab-content" style="display:none">
+            <div class="glass-card" style="padding:40px; text-align:center">
+                <h3 style="color:#f59e0b">Prime подписка</h3>
+                <p style="margin:20px 0">💰 199 ₽ / месяц</p>
+                <p>✅ Еженедельный кейс</p>
+                <p>✅ Джекпот до 4%</p>
+                <p>✅ Приоритетная поддержка</p>
+                <p style="margin-top:20px">📌 Оплата: +7-911-971-41-08</p>
+                <button class="btn btn-primary" style="margin-top:30px" onclick="buyPrime()">💎 Купить Prime</button>
+            </div>
+        </div>
+        <div id="tabDeposit" class="tab-content" style="display:none">
+            <div class="glass-card" style="padding:40px; text-align:center">
+                <h3 style="color:#f59e0b">Пополнение</h3>
+                <p style="margin:20px 0">🏦 +7-911-971-41-08<br>👤 Аэлита.С.<br>💵 25000 монет = 250 ₽</p>
+                <p style="color:#ef4444">📌 После перевода напиши чек в ЛС @ArtCSbotSupp</p>
+            </div>
+        </div>
+        <div id="tabWithdraw" class="tab-content" style="display:none">
+            <div id="withdrawItemsList" class="cases-grid"><div class="glass-card" style="padding:40px;text-align:center">Для вывода нужно пополнить от 250₽</div></div>
+        </div>
+    </div>
+
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-modal-content">
+            <h2>👑 Админ панель</h2>
+            <input type="password" id="adminPassword" placeholder="Введите пароль">
+            <button class="btn btn-primary" onclick="loginAdmin()">Войти</button>
+            <div id="adminContent" class="admin-panel">
+                <div class="admin-stats">
+                    <div>👥 Пользователей: <span id="statUsers">0</span></div>
+                    <div>💰 Монет всего: <span id="statCoins">0</span></div>
+                    <div>📦 Предметов: <span id="statItems">0</span></div>
+                    <div>💳 Депозитов: <span id="statDeposits">0 ₽</span></div>
+                </div>
+                <div class="admin-grid" id="adminGrid">
+                    <button onclick="adminShowUsers()">📋 Пользователи</button>
+                    <button onclick="adminShowCoinsForm()">💰 Выдать монеты</button>
+                    <button onclick="adminShowRemoveCoinsForm()">💸 Списать монеты</button>
+                    <button onclick="adminShowRemoveDepositForm()">💸 Списать пополнение</button>
+                    <button onclick="adminShowItemForm()">🎁 Выдать предмет</button>
+                    <button onclick="adminShowSpinsForm()">🎲 Выдать прокрутки</button>
+                    <button onclick="adminShowCaseForm()">🎫 Выдать кейс</button>
+                    <button onclick="adminShowDiscountForm()">🏷️ Выдать скидку</button>
+                    <button onclick="adminShowPersonalPromoForm()">🎫 Личный промокод</button>
+                    <button onclick="adminShowCustomPromoForm()">🎫 Кастомный промокод</button>
+                    <button onclick="adminShowGivePrimeForm()">🔐 Выдать Prime</button>
+                    <button onclick="adminShowRemovePrimeForm()">🔓 Забрать Prime</button>
+                    <button onclick="adminShowPrimeSettings()">⚙️ Настройки Prime</button>
+                    <button onclick="adminShowDeleteCaseForm()">🗑 Удалить кейс</button>
+                    <button onclick="adminShowDeleteItemForm()">🗑 Удалить предмет</button>
+                    <button onclick="adminShowBanForm()">🔨 Бан</button>
+                    <button onclick="adminShowStats()">📊 Статистика</button>
+                    <button onclick="adminShowRefStats()">👥 Рефералы</button>
+                    <button onclick="adminShowPromoStats()">🎫 Статистика промокодов</button>
+                    <button onclick="adminShowDepositHistory()">📜 История пополнений</button>
+                    <button onclick="adminShowWithdrawRequests()">👁️ Активные выводы</button>
+                    <button onclick="adminShowGiveaway()">🎉 Розыгрыш Prime</button>
+                    <button onclick="adminShowActivity()">🟢 Активность</button>
+                    <button onclick="adminShowCasesEditor()">⚙️ Редактор кейсов</button>
+                    <button onclick="adminShowSim()">💸 Симуляция пополнения</button>
+                    <button onclick="adminShowUserInventory()">👁 Инвентарь юзера</button>
+                    <button onclick="adminShowResetSpins()">🔄 Сброс прокрутки</button>
+                    <button onclick="adminShowBroadcast()">📢 Массовая рассылка</button>
+                    <button onclick="adminShowPersonalBroadcast()">💌 Личная рассылка</button>
+                    <button onclick="adminShowCreatePromo()">🎫 Создать промокод</button>
+                    <button onclick="adminShowUserDeposits()">💰 Депозиты юзера</button>
+                    <button onclick="adminShowEditItem()">✏️ Ред. предмет</button>
+                    <button onclick="adminShowNewCase()">➕ Новый кейс</button>
+                    <button onclick="adminShowDeleteUser()">❌ Удалить юзера</button>
+                    <button onclick="adminShowChangePassword()">🔑 Сменить пароль</button>
+                    <button onclick="adminShowExportDB()">📤 Экспорт БД</button>
+                    <button onclick="adminShowImportDB()">📥 Импорт БД</button>
+                    <button onclick="adminShowLogs()">📜 Логи ошибок</button>
+                    <button onclick="adminShowClearCache()">🧹 Очистить кэш</button>
+                    <button onclick="adminShowRestart()">🔄 Перезапуск бота</button>
+                </div>
+                <div id="adminResult" style="margin-top:20px"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let bgMusic = null, isMusicPlaying = false;
+        let userId = null, balance = 0, inventory = [], wheelSpins = 1;
+        const API_URL = "";
+        
+        function initSounds() {
+            try { bgMusic = new Audio('/sounds/phone.mp3'); bgMusic.loop = true; bgMusic.volume = 0.3; } catch(e) {}
+        }
+        function playSound() { try { new Audio('/sounds/case.mp3').play(); } catch(e) {} }
+        function toggleMusic() {
+            if (!bgMusic) return;
+            if (isMusicPlaying) { bgMusic.pause(); document.getElementById('musicIcon').className = 'fas fa-volume-mute'; }
+            else { bgMusic.play(); document.getElementById('musicIcon').className = 'fas fa-music'; }
+            isMusicPlaying = !isMusicPlaying;
+        }
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            initSounds();
+            userId = localStorage.getItem('userId') || Math.floor(Math.random()*1000000);
+            localStorage.setItem('userId', userId);
+            document.getElementById('userId').innerText = userId;
+            await loadBalance();
+            await loadCases();
+            await loadInventory();
+            await loadRefLink();
+            drawWheel();
+            document.body.addEventListener('click', () => { if(!isMusicPlaying && bgMusic){ bgMusic.play(); isMusicPlaying=true; } }, { once: true });
+        });
+        
+        async function loadBalance() {
+            try {
+                const res = await fetch(`${API_URL}/api/balance?user_id=${userId}`);
+                const data = await res.json();
+                balance = data.balance || 500;
+                wheelSpins = data.wheel_spins || 1;
+                document.getElementById('balance').innerText = balance;
+                document.getElementById('wheelSpins').innerText = wheelSpins;
+                document.getElementById('wheelSpinsCount').innerText = wheelSpins;
+            } catch(e) { balance = 500; document.getElementById('balance').innerText = balance; }
+        }
+        
+        async function loadCases() {
+            const cases = [
+                { id:'bomj', name:'🥫 Бомж', price:500, img:'/images/Bomj.png' },
+                { id:'berkut', name:'🦅 Беркут', price:1500, img:'/images/Berkut.png' },
+                { id:'chempion', name:'🏆 Чемпион', price:5000, img:'/images/Champion.png' },
+                { id:'major', name:'💎 Мажор', price:50000, img:'/images/Major.png' },
+                { id:'global', name:'🌍 Глобал', price:100000, img:'/images/Global.png' },
+                { id:'s1mple', name:'🎯 S1mple', price:500000, img:'/images/S1mple.png' },
+                { id:'gabe', name:'👑 Gabe', price:1000000, img:'/images/Gabe.png' }
+            ];
+            const grid = document.getElementById('casesGrid');
+            grid.innerHTML = '';
+            for(const c of cases) {
+                grid.innerHTML += `<div class="case-card" onclick="openCase('${c.id}',${c.price})"><img src="${c.img}" onerror="this.src='https://placehold.co/120x120/f59e0b/000?text=${c.name}'"><h3>${c.name}</h3><div class="price">💰 ${c.price} монет</div><button class="btn btn-primary">Открыть</button></div>`;
+            }
+        }
+        
+        function openCase(caseId, price) {
+            if(balance < price) { alert('❌ Не хватает монет'); return; }
+            playSound();
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:#000; display:flex; align-items:center; justify-content:center; z-index:1000; flex-direction:column';
+            overlay.innerHTML = `<div style="font-size:32px" id="rollText">🟢 Обычный скин</div><div style="margin-top:20px">Открываем кейс...</div>`;
+            document.body.appendChild(overlay);
+            const items = ['🟢 Обычный скин','🔵 Средний скин','🟣 Хороший скин','🟠 Очень хороший','🔴 Редкий скин','🔥 ДЖЕКПОТ'];
+            let rolls = 0, interval = setInterval(() => {
+                document.getElementById('rollText').innerText = items[Math.floor(Math.random()*items.length)];
+                rolls++;
+                if(rolls>20) clearInterval(interval);
+            },100);
+            setTimeout(() => {
+                clearInterval(interval);
+                fetch(`${API_URL}/api/open_case`, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({ user_id:userId, case_id:caseId })
+                }).then(res=>res.json()).then(data=>{
+                    document.getElementById('rollText').innerHTML = `🎉 ${data.item} за ${data.price} монет! 🎉`;
+                    setTimeout(()=>{ document.body.removeChild(overlay); loadBalance(); loadInventory(); },2000);
+                }).catch(()=>{ document.getElementById('rollText').innerText = '❌ Ошибка!'; setTimeout(()=>document.body.removeChild(overlay),1500); });
+            },9000);
+        }
+        
+        let wheelSegments = [{name:'50💰',value:50},{name:'100💰',value:100},{name:'250💰',value:250},{name:'500💰',value:500},{name:'1000💰',value:1000},{name:'КЕЙС',value:0}];
+        function drawWheel() {
+            const wheel = document.getElementById('wheel');
+            if(!wheel) return;
+            const angle = 360/wheelSegments.length;
+            wheel.innerHTML = '';
+            wheelSegments.forEach((seg,i)=>{
+                const div = document.createElement('div');
+                div.style.cssText = `position:absolute; width:50%; height:50%; left:50%; top:50%; transform-origin:0% 0%; transform:rotate(${i*angle}deg); background: conic-gradient(from 0deg, black 0deg ${angle}deg, black ${angle}deg ${angle*2}deg); border-radius:50% 0 0 0; border:1px solid #f59e0b`;
+                const span = document.createElement('span');
+                span.style.cssText = `position:absolute; left:25px; top:15px; font-size:12px; transform:rotate(45deg); color:#f59e0b`;
+                span.innerText = seg.name;
+                div.appendChild(span);
+                wheel.appendChild(div);
+            });
+            const center = document.createElement('div');
+            center.style.cssText = `position:absolute; top:50%; left:50%; width:40px; height:40px; background:#000; border-radius:50%; transform:translate(-50%,-50%); border:2px solid #f59e0b`;
+            wheel.appendChild(center);
+        }
+        
+        let spinning = false;
+        async function spinWheel() {
+            if(spinning) return;
+            if(wheelSpins<=0){ alert('❌ Нет прокруток! Завтра +1'); return; }
+            playSound();
+            spinning = true;
+            const wheel = document.getElementById('wheel');
+            const spins = Math.floor(Math.random()*5)+10;
+            const deg = spins*360 + Math.floor(Math.random()*360);
+            wheel.style.transform = `rotate(${deg}deg)`;
+            setTimeout(async()=>{
+                await fetch(`${API_URL}/api/spin_wheel`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ user_id:userId }) });
+                alert(`🍀 Выпало: ${wheelSegments[Math.floor(deg%360/(360/wheelSegments.length))].name}`);
+                await loadBalance();
+                spinning = false;
+                wheel.style.transform = '';
+                drawWheel();
+            },9000);
+        }
+        
+        async function loadInventory() {
+            try {
+                const res = await fetch(`${API_URL}/api/inventory?user_id=${userId}`);
+                const data = await res.json();
+                inventory = data.items || [];
+                const invList = document.getElementById('inventoryList');
+                if(inventory.length===0) invList.innerHTML = '<div class="panel-item">📭 Пуст</div>';
+                else invList.innerHTML = inventory.slice(0,15).map(i=>`<div class="panel-item"><span>${i.name}</span><span>${i.price}💰</span></div>`).join('');
+                document.getElementById('invCount').innerText = inventory.length;
+                if(inventory.length) document.getElementById('topSkin').innerText = inventory[0].name;
+                const upgradeList = document.getElementById('upgradeItemsList');
+                if(upgradeList) {
+                    if(inventory.length===0) upgradeList.innerHTML = '<div class="glass-card" style="padding:40px;text-align:center">Нет предметов</div>';
+                    else upgradeList.innerHTML = inventory.map(i=>`<div class="case-card" style="cursor:pointer" onclick="showUpgradeCircle(${i.id},${i.price})"><div>${i.name}</div><div>${i.price}💰</div><div style="font-size:12px">⚡ Шанс: ${Math.min(70,Math.floor(i.price/1000))}%</div></div>`).join('');
+                }
+                const withdrawList = document.getElementById('withdrawItemsList');
+                if(withdrawList) {
+                    if(inventory.length===0) withdrawList.innerHTML = '<div class="glass-card" style="padding:40px;text-align:center">Нет предметов</div>';
+                    else withdrawList.innerHTML = inventory.map(i=>`<div class="case-card"><div>${i.name}</div><div>${i.price}💰</div><button class="btn btn-outline" style="margin-top:10px" onclick="withdrawItem(${i.id})">📤 Вывести</button></div>`).join('');
+                }
+            } catch(e) {}
+        }
+        
+        function showUpgradeCircle(itemId, price) {
+            const chance = Math.min(70, Math.floor(price/1000));
+            const fillDeg = (chance/100)*360;
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:#000; display:flex; align-items:center; justify-content:center; z-index:1000';
+            overlay.innerHTML = `<div class="upgrade-circle"><div class="upgrade-circle-bg"></div><div class="upgrade-circle-fill" style="background: conic-gradient(from 0deg, #f59e0b 0deg, #f59e0b ${fillDeg}deg, #ccc ${fillDeg}deg)"></div><div class="upgrade-circle-center">${chance}%</div></div><button class="btn btn-primary" style="margin-top:30px" onclick="startUpgrade(${itemId},${price})">🎲 Улучшить</button>`;
+            document.body.appendChild(overlay);
+        }
+        
+        async function startUpgrade(itemId, price) {
+            playSound();
+            document.body.querySelector('.upgrade-circle').innerHTML = '<div style="font-size:24px; text-align:center">Улучшаем...<br>9 секунд</div>';
+            setTimeout(async()=>{
+                const success = Math.random()*100 <= Math.min(70, Math.floor(price/1000));
+                if(success) {
+                    const newPrice = Math.floor(price * (Math.random()*2.5+1.5));
+                    await fetch(`${API_URL}/api/upgrade_item`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ user_id:userId, item_id:itemId, new_price:newPrice }) });
+                    alert(`✅ УСПЕХ! Предмет улучшен до ${newPrice} монет`);
+                } else {
+                    await fetch(`${API_URL}/api/upgrade_item`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ user_id:userId, item_id:itemId, success:false }) });
+                    alert(`❌ ПРОВАЛ! Предмет сгорел. +${Math.floor(price*0.05)} монет`);
+                }
+                document.body.removeChild(document.querySelector('.upgrade-circle').parentElement);
+                await loadBalance();
+                await loadInventory();
+            },9000);
+        }
+        
+        async function withdrawItem(itemId) {
+            const deposit = await fetch(`${API_URL}/api/deposit?user_id=${userId}`).then(r=>r.json());
+            if(deposit.total<250) { alert('❌ Для вывода нужно пополнить от 250₽'); return; }
+            const link = prompt('Введите трейд-ссылку:');
+            if(link) {
+                await fetch(`${API_URL}/api/withdraw`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ user_id:userId, item_id:itemId, trade_link:link }) });
+                alert('✅ Заявка отправлена');
+                await loadInventory();
+            }
+        }
+        
+        async function activatePromo() {
+            const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+            if(!code) { alert('Введите промокод'); return; }
+            const res = await fetch(`${API_URL}/api/activate_promo`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ user_id:userId, code }) });
+            const data = await res.json();
+            if(data.success) alert(`✅ Промокод активирован! +${data.reward} монет`);
+            else alert(data.error || '❌ Неверный промокод');
+            await loadBalance();
+        }
+        
+        function buyPrime() { alert('💎 Prime: переведите 199 ₽ на +7-911-971-41-08 и отправьте чек в @ArtCSbotSupp'); }
+        function refreshBalance() { loadBalance(); }
+        
+        async function loadRefLink() {
+            const link = `${window.location.origin}?ref=${userId}`;
+            document.getElementById('refLink').innerText = link;
+            document.getElementById('refLinkTab').innerText = link;
+        }
+        function copyRefLink() { navigator.clipboard.writeText(document.getElementById('refLink').innerText); alert('✅ Ссылка скопирована'); }
+        
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+            document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`).style.display='block';
+            if(tab==='wheel') drawWheel();
+            if(tab==='upgrade'||tab==='withdraw') loadInventory();
+        }
+        function openProfile() { document.getElementById('profilePanel').classList.add('active'); loadInventory(); }
+        function closeProfile() { document.getElementById('profilePanel').classList.remove('active'); }
+        
+        // Админка
+        function showAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+            document.getElementById('adminContent').classList.remove('active');
+            document.getElementById('adminPassword').value = '';
+        }
+        function loginAdmin() {
+            if(document.getElementById('adminPassword').value === '250734382') {
+                document.getElementById('adminContent').classList.add('active');
+                loadAdminStats();
+            } else alert('❌ Неверный пароль!');
+        }
+        async function loadAdminStats() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin_stats`);
+                const stats = await res.json();
+                document.getElementById('statUsers').innerText = stats.users || 0;
+                document.getElementById('statCoins').innerText = stats.total_coins || 0;
+                document.getElementById('statItems').innerText = stats.total_items || 0;
+                document.getElementById('statDeposits').innerText = stats.total_deposits || '0 ₽';
+            } catch(e) {}
+        }
+        function adminShowUsers() { fetch(`${API_URL}/api/admin_users`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.users.forEach(u=>{ html+=`<div>🆔 ${u.id} | @${u.username} | 💰${u.coins} | 💳${u.deposit}₽</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        function adminShowCoinsForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId" placeholder="ID"><input type="number" id="adminCoinsAmount" placeholder="Кол-во"><button class="btn btn-primary" onclick="adminGiveCoins()">Выдать</button>`; }
+        async function adminGiveCoins() { const target = document.getElementById('adminTargetId').value, amount = document.getElementById('adminCoinsAmount').value; await fetch(`${API_URL}/api/admin_give_coins`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, coins:parseInt(amount) }) }); alert(`✅ Выдано ${amount} монет`); loadAdminStats(); }
+        function adminShowRemoveCoinsForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId2" placeholder="ID"><input type="number" id="adminCoinsAmount2" placeholder="Кол-во"><button class="btn btn-primary" onclick="adminRemoveCoins()">Списать</button>`; }
+        async function adminRemoveCoins() { const target = document.getElementById('adminTargetId2').value, amount = document.getElementById('adminCoinsAmount2').value; await fetch(`${API_URL}/api/admin_remove_coins`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, coins:parseInt(amount) }) }); alert(`✅ Списано ${amount} монет`); loadAdminStats(); }
+        function adminShowRemoveDepositForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId3" placeholder="ID"><input type="number" id="adminDepositAmount" placeholder="Сумма в ₽"><button class="btn btn-primary" onclick="adminRemoveDeposit()">Списать</button>`; }
+        async function adminRemoveDeposit() { const target = document.getElementById('adminTargetId3').value, amount = document.getElementById('adminDepositAmount').value; await fetch(`${API_URL}/api/admin_remove_deposit`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, amount:parseInt(amount) }) }); alert(`✅ Списано ${amount} ₽`); loadAdminStats(); }
+        function adminShowItemForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId4" placeholder="ID"><input type="text" id="adminItemName" placeholder="Название"><input type="number" id="adminItemPrice" placeholder="Цена"><button class="btn btn-primary" onclick="adminGiveItem()">Выдать</button>`; }
+        async function adminGiveItem() { const target = document.getElementById('adminTargetId4').value, name = document.getElementById('adminItemName').value, price = document.getElementById('adminItemPrice').value; await fetch(`${API_URL}/api/admin_give_item`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, item_name:name, item_price:parseInt(price) }) }); alert(`✅ Выдан предмет ${name}`); }
+        function adminShowSpinsForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId5" placeholder="ID"><input type="number" id="adminSpinsAmount" placeholder="Кол-во"><button class="btn btn-primary" onclick="adminGiveSpins()">Выдать</button>`; }
+        async function adminGiveSpins() { const target = document.getElementById('adminTargetId5').value, amount = document.getElementById('adminSpinsAmount').value; await fetch(`${API_URL}/api/admin_give_spins`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, spins:parseInt(amount) }) }); alert(`✅ Выдано ${amount} прокруток`); }
+        function adminShowCaseForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId6" placeholder="ID"><select id="adminCaseSelect"><option value="bomj">Бомж</option><option value="berkut">Беркут</option><option value="chempion">Чемпион</option><option value="major">Мажор</option><option value="global">Глобал</option><option value="s1mple">S1mple</option><option value="gabe">Gabe</option></select><button class="btn btn-primary" onclick="adminGiveCase()">Выдать</button>`; }
+        async function adminGiveCase() { const target = document.getElementById('adminTargetId6').value, caseName = document.getElementById('adminCaseSelect').value; await fetch(`${API_URL}/api/admin_give_case`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, case_name:caseName }) }); alert(`✅ Выдан кейс ${caseName}`); }
+        function adminShowDiscountForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId7" placeholder="ID"><select id="adminDiscountSelect"><option value="5">5%</option><option value="10">10%</option><option value="15">15%</option><option value="25">25%</option></select><button class="btn btn-primary" onclick="adminGiveDiscount()">Выдать</button>`; }
+        async function adminGiveDiscount() { const target = document.getElementById('adminTargetId7').value, discount = document.getElementById('adminDiscountSelect').value; await fetch(`${API_URL}/api/admin_give_discount`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, discount:parseInt(discount) }) }); alert(`✅ Скидка ${discount}% выдана`); }
+        function adminShowPersonalPromoForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId8" placeholder="ID"><input type="number" id="adminPromoReward" placeholder="Награда"><button class="btn btn-primary" onclick="adminCreatePersonalPromo()">Создать</button>`; }
+        async function adminCreatePersonalPromo() { const target = document.getElementById('adminTargetId8').value, reward = document.getElementById('adminPromoReward').value; const res = await fetch(`${API_URL}/api/admin_create_personal_promo`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, reward:parseInt(reward) }) }); const data = await res.json(); alert(`✅ Личный промокод: ${data.code}`); }
+        function adminShowCustomPromoForm() { document.getElementById('adminResult').innerHTML = `<input type="text" id="adminCustomCode" placeholder="Код"><input type="number" id="adminCustomReward" placeholder="Награда"><input type="number" id="adminCustomUses" placeholder="Использований"><button class="btn btn-primary" onclick="adminCreateCustomPromo()">Создать</button>`; }
+        async function adminCreateCustomPromo() { const code = document.getElementById('adminCustomCode').value.toUpperCase(), reward = document.getElementById('adminCustomReward').value, uses = document.getElementById('adminCustomUses').value; await fetch(`${API_URL}/api/admin_create_custom_promo`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, code, reward:parseInt(reward), uses:parseInt(uses) }) }); alert(`✅ Промокод ${code} создан`); }
+        function adminShowGivePrimeForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId9" placeholder="ID"><button class="btn btn-primary" onclick="adminGivePrime()">Выдать Prime</button>`; }
+        async function adminGivePrime() { const target = document.getElementById('adminTargetId9').value; await fetch(`${API_URL}/api/admin_give_prime`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target }) }); alert(`✅ Prime выдана`); }
+        function adminShowRemovePrimeForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminTargetId10" placeholder="ID"><button class="btn btn-primary" onclick="adminRemovePrime()">Забрать Prime</button>`; }
+        async function adminRemovePrime() { const target = document.getElementById('adminTargetId10').value; await fetch(`${API_URL}/api/admin_remove_prime`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target }) }); alert(`✅ Prime снята`); }
+        function adminShowPrimeSettings() { fetch(`${API_URL}/api/prime_settings`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(d=>{ html+=`<div>${d.name}: шанс ${d.chance}% ${d.active?'✅':'❌'} ${d.jackpot?'🔥':''}</div>`; }); html+=`</div><input type="text" id="primeCaseName" placeholder="Кейс"><input type="number" id="primeNewChance" placeholder="Новый шанс"><button class="btn btn-primary" onclick="adminUpdatePrimeChance()">Обновить</button>`; document.getElementById('adminResult').innerHTML=html; }); }
+        async function adminUpdatePrimeChance() { const name = document.getElementById('primeCaseName').value, chance = document.getElementById('primeNewChance').value; await fetch(`${API_URL}/api/admin_update_prime_chance`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, case_name:name, chance:parseFloat(chance) }) }); alert('✅ Шанс обновлён'); adminShowPrimeSettings(); }
+        function adminShowDeleteCaseForm() { document.getElementById('adminResult').innerHTML = `<input type="text" id="adminDeleteCase" placeholder="Название кейса"><button class="btn btn-primary" onclick="adminDeleteCase()">Удалить</button>`; }
+        async function adminDeleteCase() { const name = document.getElementById('adminDeleteCase').value; await fetch(`${API_URL}/api/admin_delete_case`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, case_name:name }) }); alert(`✅ Кейс ${name} удалён`); }
+        function adminShowDeleteItemForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminDeleteItemId" placeholder="ID предмета"><button class="btn btn-primary" onclick="adminDeleteItem()">Удалить</button>`; }
+        async function adminDeleteItem() { const id = document.getElementById('adminDeleteItemId').value; await fetch(`${API_URL}/api/admin_delete_item`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, item_id:parseInt(id) }) }); alert('✅ Предмет удалён'); }
+        function adminShowBanForm() { document.getElementById('adminResult').innerHTML = `<input type="number" id="adminBanUserId" placeholder="ID"><button class="btn btn-primary" onclick="adminBanUser()">🔨 Забанить/Разбанить</button>`; }
+        async function adminBanUser() { const target = document.getElementById('adminBanUserId').value; await fetch(`${API_URL}/api/admin_ban`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target }) }); alert('✅ Статус бана изменён'); }
+        function adminShowStats() { loadAdminStats(); }
+        function adminShowRefStats() { fetch(`${API_URL}/api/admin_ref_stats`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(u=>{ html+=`<div>${u.username}: ${u.refs} рефералов</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        function adminShowPromoStats() { fetch(`${API_URL}/api/admin_promo_stats`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(p=>{ html+=`<div>${p.code} | ${p.reward}💰 | осталось ${p.uses}</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        function adminShowDepositHistory() { fetch(`${API_URL}/api/admin_deposit_history`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(d=>{ html+=`<div>💰 ${d.amount}₽ от ${d.username} (${d.created_at})</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        function adminShowWithdrawRequests() { fetch(`${API_URL}/api/admin_withdraw_requests`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(w=>{ html+=`<div>📦 ${w.item_name} | 👤 ${w.username} | 🔗 ${w.trade_link}<button onclick="adminCompleteWithdraw(${w.id})">✅</button> <button onclick="adminDeleteWithdraw(${w.id})">🗑</button></div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        async function adminCompleteWithdraw(id) { await fetch(`${API_URL}/api/admin_complete_withdraw`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, request_id:id }) }); alert('✅ Заявка отмечена'); adminShowWithdrawRequests(); }
+        async function adminDeleteWithdraw(id) { await fetch(`${API_URL}/api/admin_delete_withdraw`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, request_id:id }) }); alert('🗑 Заявка удалена'); adminShowWithdrawRequests(); }
+        function adminShowGiveaway() { document.getElementById('adminResult').innerHTML = `<input type="number" id="giveawayWinners" placeholder="Кол-во победителей"><button class="btn btn-primary" onclick="adminStartGiveaway()">Запустить</button>`; }
+        async function adminStartGiveaway() { const winners = document.getElementById('giveawayWinners').value; await fetch(`${API_URL}/api/admin_giveaway`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, winners:parseInt(winners) }) }); alert('✅ Розыгрыш проведён'); }
+        function adminShowActivity() { fetch(`${API_URL}/api/admin_activity`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(a=>{ html+=`<div>🟢 ${a.username} | последняя активность: ${a.last_activity}</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        function adminShowCasesEditor() { fetch(`${API_URL}/api/admin_cases`).then(r=>r.json()).then(data=>{ let html='<div class="admin-stats">'; data.forEach(c=>{ html+=`<div>📦 ${c.name} | ${c.price}💰 | шанс ${c.chance}% <button onclick="adminEditCase('${c.name}')">✏️</button></div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }); }
+        function adminEditCase(name) { document.getElementById('adminResult').innerHTML = `<input type="text" id="editCaseName" value="${name}" readonly><input type="number" id="editCasePrice" placeholder="Новая цена"><input type="number" id="editCaseChance" placeholder="Новый шанс"><button class="btn btn-primary" onclick="adminSaveCase()">Сохранить</button>`; }
+        async function adminSaveCase() { const name = document.getElementById('editCaseName').value, price = document.getElementById('editCasePrice').value, chance = document.getElementById('editCaseChance').value; await fetch(`${API_URL}/api/admin_save_case`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, case_name:name, price:parseInt(price), chance:parseFloat(chance) }) }); alert('✅ Кейс обновлён'); adminShowCasesEditor(); }
+        function adminShowSim() { document.getElementById('adminResult').innerHTML = `<input type="number" id="simUserId" placeholder="ID пользователя"><input type="number" id="simAmount" placeholder="Сумма пополнения"><button class="btn btn-primary" onclick="adminSimDeposit()">Симулировать</button>`; }
+        async function adminSimDeposit() { const target = document.getElementById('simUserId').value, amount = document.getElementById('simAmount').value; await fetch(`${API_URL}/api/admin_sim_deposit`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, amount:parseInt(amount) }) }); alert(`✅ Симуляция: +${amount*100} монет`); }
+        function adminShowUserInventory() { document.getElementById('adminResult').innerHTML = `<input type="number" id="invUserId" placeholder="ID пользователя"><button class="btn btn-primary" onclick="adminViewInventory()">Показать</button>`; }
+        async function adminViewInventory() { const target = document.getElementById('invUserId').value; const res = await fetch(`${API_URL}/api/admin_user_inventory?user_id=${target}`); const data = await res.json(); let html='<div class="admin-stats">'; data.items.forEach(i=>{ html+=`<div>📦 ${i.name} (${i.price}💰) ID:${i.id}</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }
+        function adminShowResetSpins() { document.getElementById('adminResult').innerHTML = `<input type="number" id="resetUserId" placeholder="ID пользователя"><button class="btn btn-primary" onclick="adminResetSpins()">Сбросить</button>`; }
+        async function adminResetSpins() { const target = document.getElementById('resetUserId').value; await fetch(`${API_URL}/api/admin_reset_spins`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target }) }); alert('✅ Прокрутки сброшены'); }
+        function adminShowBroadcast() { document.getElementById('adminResult').innerHTML = `<textarea id="broadcastText" rows="3" style="width:100%; padding:12px; background:#1a1a1a; border:1px solid #f59e0b; border-radius:16px; color:white"></textarea><button class="btn btn-primary" onclick="adminBroadcast()">Отправить</button>`; }
+        async function adminBroadcast() { const text = document.getElementById('broadcastText').value; await fetch(`${API_URL}/api/admin_broadcast`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, message:text }) }); alert('✅ Рассылка отправлена'); }
+        function adminShowPersonalBroadcast() { document.getElementById('adminResult').innerHTML = `<input type="number" id="personalUserId" placeholder="ID"><textarea id="personalText" rows="3" style="width:100%; padding:12px; background:#1a1a1a; border:1px solid #f59e0b; border-radius:16px; color:white"></textarea><button class="btn btn-primary" onclick="adminPersonalBroadcast()">Отправить</button>`; }
+        async function adminPersonalBroadcast() { const target = document.getElementById('personalUserId').value, text = document.getElementById('personalText').value; await fetch(`${API_URL}/api/admin_personal_broadcast`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target, message:text }) }); alert('✅ Сообщение отправлено'); }
+        function adminShowCreatePromo() { document.getElementById('adminResult').innerHTML = `<input type="number" id="promoReward" placeholder="Награда"><input type="number" id="promoUses" placeholder="Кол-во использований"><button class="btn btn-primary" onclick="adminCreatePromo()">Создать</button>`; }
+        async function adminCreatePromo() { const reward = document.getElementById('promoReward').value, uses = document.getElementById('promoUses').value; const res = await fetch(`${API_URL}/api/admin_create_promo`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, reward:parseInt(reward), uses:parseInt(uses) }) }); const data = await res.json(); alert(`✅ Промокод: ${data.code}`); }
+        function adminShowUserDeposits() { document.getElementById('adminResult').innerHTML = `<input type="number" id="depositsUserId" placeholder="ID"><button class="btn btn-primary" onclick="adminViewDeposits()">Показать</button>`; }
+        async function adminViewDeposits() { const target = document.getElementById('depositsUserId').value; const res = await fetch(`${API_URL}/api/admin_user_deposits?user_id=${target}`); const data = await res.json(); let html='<div class="admin-stats">'; data.deposits.forEach(d=>{ html+=`<div>💰 ${d.amount}₽ (${d.created_at})</div>`; }); html+='</div>'; document.getElementById('adminResult').innerHTML=html; }
+        function adminShowEditItem() { document.getElementById('adminResult').innerHTML = `<input type="number" id="editItemId" placeholder="ID предмета"><input type="number" id="editItemNewPrice" placeholder="Новая цена"><button class="btn btn-primary" onclick="adminEditItem()">Сохранить</button>`; }
+        async function adminEditItem() { const id = document.getElementById('editItemId').value, price = document.getElementById('editItemNewPrice').value; await fetch(`${API_URL}/api/admin_edit_item`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, item_id:parseInt(id), new_price:parseInt(price) }) }); alert('✅ Цена обновлена'); }
+        function adminShowNewCase() { document.getElementById('adminResult').innerHTML = `<input type="text" id="newCaseName" placeholder="Название"><input type="number" id="newCasePrice" placeholder="Цена"><input type="number" id="newCaseMax" placeholder="Макс цена скина"><input type="number" id="newCaseChance" placeholder="Шанс джекпота"><button class="btn btn-primary" onclick="adminAddCase()">Создать</button>`; }
+        async function adminAddCase() { const name = document.getElementById('newCaseName').value, price = document.getElementById('newCasePrice').value, maxPrice = document.getElementById('newCaseMax').value, chance = document.getElementById('newCaseChance').value; await fetch(`${API_URL}/api/admin_add_case`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, name, price:parseInt(price), max_price:parseInt(maxPrice), chance:parseFloat(chance) }) }); alert(`✅ Кейс ${name} создан`); }
+        function adminShowDeleteUser() { document.getElementById('adminResult').innerHTML = `<input type="number" id="deleteUserId" placeholder="ID пользователя"><button class="btn btn-primary" onclick="adminDeleteUser()">Удалить</button>`; }
+        async function adminDeleteUser() { const target = document.getElementById('deleteUserId').value; await fetch(`${API_URL}/api/admin_delete_user`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, target_id:target }) }); alert('✅ Пользователь удалён'); }
+        function adminShowChangePassword() { document.getElementById('adminResult').innerHTML = `<input type="password" id="newAdminPassword" placeholder="Новый пароль"><button class="btn btn-primary" onclick="adminChangePassword()">Сменить</button>`; }
+        async function adminChangePassword() { const newPwd = document.getElementById('newAdminPassword').value; await fetch(`${API_URL}/api/admin_change_password`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId, new_password:newPwd }) }); alert('✅ Пароль изменён'); }
+        function adminShowExportDB() { fetch(`${API_URL}/api/admin_export_db`).then(r=>r.blob()).then(blob=>{ const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='artdrop_backup.db'; a.click(); }); }
+        function adminShowImportDB() { document.getElementById('adminResult').innerHTML = `<input type="file" id="importFile" accept=".db"><button class="btn btn-primary" onclick="adminImportDB()">Импортировать</button>`; }
+        async function adminImportDB() { alert('Функция импорта через веб-интерфейс'); }
+        function adminShowLogs() { fetch(`${API_URL}/api/admin_logs`).then(r=>r.text()).then(data=>{ document.getElementById('adminResult').innerHTML = `<div class="admin-stats"><pre style="color:#f59e0b; font-size:12px">${data}</pre></div>`; }); }
+        function adminShowClearCache() { fetch(`${API_URL}/api/admin_clear_cache`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId }) }).then(()=>alert('✅ Кэш очищен')); }
+        function adminShowRestart() { fetch(`${API_URL}/api/admin_restart`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ admin_id:userId }) }).then(()=>alert('🔄 Перезапуск...')); }
+    </script>
+</body>
+</html>
